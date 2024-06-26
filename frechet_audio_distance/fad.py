@@ -106,7 +106,7 @@ class FrechetAudioDistance:
         if model_name == "vggish":
             # S. Hershey et al., "CNN Architectures for Large-Scale Audio Classification", ICASSP 2017
             if load_local_files:
-                self.model = torch.load(repo_or_dir=local_dir, source='local', model='vggish')
+                self.model = torch.hub.load(repo_or_dir=local_dir, source='local', model='vggish')
             else:
                 self.model = torch.hub.load(repo_or_dir='harritaylor/torchvggish', model='vggish')
             if not use_pca:
