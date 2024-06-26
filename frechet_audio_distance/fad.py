@@ -36,6 +36,7 @@ class FrechetAudioDistance:
         verbose=False,
         audio_load_worker=8,
         enable_fusion=False,  # only for CLAP
+        load_from_local=False,
     ):
         """
         Initialize FAD
@@ -49,6 +50,7 @@ class FrechetAudioDistance:
         -- use_pca: whether to apply PCA to the vggish embeddings
         -- use_activation: whether to use the output activation in vggish
         -- enable_fusion: whether to use fusion for clap models (valid depending on the specific submodel used)
+        -- load_from_local: load the model from local directory instead of downloading it
         """
         assert model_name in ["vggish", "pann", "clap", "encodec"], "model_name must be either 'vggish', 'pann', 'clap' or 'encodec'"
         if model_name == "vggish":
@@ -88,7 +90,7 @@ class FrechetAudioDistance:
             self.ckpt_dir = torch.hub.get_dir()
         self.__get_model(model_name=model_name, use_pca=use_pca, use_activation=use_activation)
 
-    def __get_model(self, model_name="vggish", use_pca=False, use_activation=False):
+    def __get_model(self, model_name="vggish", use_pca=False, use_activation=False, load_local_files=False, local_dir=None):
         """
         Get ckpt and set model for the specified model_name
 
@@ -100,7 +102,10 @@ class FrechetAudioDistance:
         # vggish
         if model_name == "vggish":
             # S. Hershey et al., "CNN Architectures for Large-Scale Audio Classification", ICASSP 2017
-            self.model = torch.hub.load(repo_or_dir='harritaylor/torchvggish', model='vggish')
+            if load_local_files:
+                self.model = torch.load(repo_or_dir=local_dir, source='local', model='vggish')
+            else:
+                self.model = torch.hub.load(repo_or_dir='harritaylor/torchvggish', model='vggish')
             if not use_pca:
                 self.model.postprocess = False
             if not use_activation:
