@@ -37,6 +37,7 @@ class FrechetAudioDistance:
         audio_load_worker=8,
         enable_fusion=False,  # only for CLAP
         load_from_local=False,
+        local_model_dir=None,
     ):
         """
         Initialize FAD
@@ -51,6 +52,7 @@ class FrechetAudioDistance:
         -- use_activation: whether to use the output activation in vggish
         -- enable_fusion: whether to use fusion for clap models (valid depending on the specific submodel used)
         -- load_from_local: load the model from local directory instead of downloading it
+        -- local_model_dir: directory containing model files
         """
         assert model_name in ["vggish", "pann", "clap", "encodec"], "model_name must be either 'vggish', 'pann', 'clap' or 'encodec'"
         if model_name == "vggish":
@@ -88,7 +90,8 @@ class FrechetAudioDistance:
         else:
             # by default `ckpt_dir` is `torch.hub.get_dir()`
             self.ckpt_dir = torch.hub.get_dir()
-        self.__get_model(model_name=model_name, use_pca=use_pca, use_activation=use_activation)
+        self.__get_model(model_name=model_name, use_pca=use_pca, use_activation=use_activation, 
+                         load_local_files=load_from_local, local_dir=local_model_dir)
 
     def __get_model(self, model_name="vggish", use_pca=False, use_activation=False, load_local_files=False, local_dir=None):
         """
